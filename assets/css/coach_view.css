@@ -3,10 +3,13 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
+    background: url("../images/background.jpg") no-repeat;
+    background-size: cover;
+    background-position: center;
 }
 
 header {
-    background-color: #007bff;
+    background-color: transparent;
     color: white;
     padding: 20px;
 }
@@ -38,6 +41,8 @@ nav ul li a.active {
 
 main {
     padding: 20px;
+    /* background-color: #000B58; */
+    height: 100vh;
 }
 
 .section {
@@ -47,7 +52,9 @@ main {
 .section.active {
     display: block;
 }
-
+.section h2{
+    text-align: center;
+}
 .overview {
     display: flex;
     gap: 20px;
@@ -55,10 +62,14 @@ main {
 
 .stat {
     flex: 1;
-    background-color: #f8f9fa;
-    border: 1px solid #ddd;
+    background-color: rgb(255, 255, 255, 0.8);
+    /* backdrop-filter: blur(25px); */
+    border: 2px solid #ddd;
     padding: 15px;
     border-radius: 5px;
+}
+.stat:hover{
+    backdrop-filter: blur(25px);
 }
 
 table {
@@ -76,4 +87,119 @@ table th, table td {
 table th {
     background-color: #007bff;
     color: white;
+}
+
+#team_thingy{
+    padding: 20px;
+    background-color: whitesmoke;
+    border-radius: 15px;
+}
+
+
+.add_player_form{
+    position: relative;
+    left: 30%;
+    top: 15px;
+    width: 450px;
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(15px);
+    justify-content: center;
+    padding: 30px 10px 10px 5px;
+    display: none;
+    border-radius: 15px;
+}
+#addplayer-form h1{
+    text-align: center;
+    color: black;
+}
+
+#addplayer-form.input-box {
+    width: 100%;
+    height: 40px;
+    /* margin: 30px 0; */
+    padding: 25px 0;
+    border: 2px solid black;
+}
+
+#addplayer-form .input-box input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: black;
+    border: 1px solid black;
+    border-radius: 40px;
+    font-size: 15px;
+    padding: 20px 5px 20px 10px;
+}
+
+#addplayer-form .input-box ul {
+    display: flex;
+    list-style: none;
+    width: 100%;
+    gap: 40px;
+    padding-left: 0;
+}
+
+.input-box input::placeholder{
+    color: black;
+}
+
+.btn{
+    width: 70%;
+    height: 45px;
+    border: none;
+    outline: none;
+    background: #fff;
+    border-radius: 35px;
+    font-size: 17px;
+    font-weight: 600;
+    color: #000;
+    margin-top: 25px;
+    cursor: pointer;
+}
+
+/* Modal overlay */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5); /* Black background with transparency */
+}
+
+/* Modal content */
+.modal-content {
+    background-color: whitesmoke;
+    margin: 10% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 40%;
+    border-radius: 10px;
+    position: relative;
+}
+
+/* Close button */
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover, .close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+
+footer{
+    color: whitesmoke;
 }

@@ -48,19 +48,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Redirect based on role
                 switch ($user['role']) {
                     case 'fan':
-                        header("Location: ../views/fan_view.html");
+                        header("Location: ../views/fan_view.php");
                         break;
                     case 'admin':
-                        header("Location: ../views/admin_view.html");
+                        header("Location: ../views/admin_view.php");
                         break;
                     case 'player':
-                        header("Location: ../views/player_view.html");
+                        header("Location: ../views/player_view.php");
                         break;
                     case 'coach':
-                        header("Location: ../views/coach_view.html");
+                        header("Location: ../views/coach_view.php");
                         break;
                     case 'organizer':
-                        header("Location: ../views/organizer_view.html");
+                        header("Location: ../views/organizer_view.php");
                         break;
                     default:
                         echo "Invalid role detected.";
