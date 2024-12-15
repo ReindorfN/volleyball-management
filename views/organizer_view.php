@@ -65,7 +65,7 @@ if ($stmt) {
                 <li><a href="#dashboard" id="dashboard_btn" class="active">Dashboard</a></li>
                 <li><a href="#matches" id="matches_btn">Match Management</a></li>
                 <li><a href="#tournaments" id="tournaments_btn">Tournament Management</a></li>
-                <li><a href="../actions/logout.php">Logout</a></li>
+                <button id="logout_btn"><a href="../actions/logout.php">Logout</a></button>
             </ul>
         </nav>
     </header>
@@ -133,8 +133,18 @@ if ($stmt) {
                                 <td><?= htmlspecialchars($match['match_date']); ?></td>
                                 <td><?= htmlspecialchars($match['venue']); ?></td>
                                 <td>
-                                    <button>Edit</button>
-                                    <button>Delete</button>
+                                    <button 
+                                        id="edit_match_<?= $match['match_id']; ?>" 
+                                        class="edit-match-btn" 
+                                        data-match-id="<?= $match['match_id']; ?>">
+                                        Edit
+                                    </button>
+                                    <button 
+                                        id="delete_match_<?= $match['match_id']; ?>" 
+                                        class="delete-match-btn" 
+                                        data-match-id="<?= $match['match_id']; ?>">
+                                        Delete
+                                    </button>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -147,7 +157,8 @@ if ($stmt) {
         <section id="tournaments" class="section">
             <h2>Tournament Management</h2>
             <button id="add_tournament_btn">Add Tournament</button>
-            <div>
+            <div class="stat">
+                <h3>Tournaments</h3>
                 <table id="tournament_table">
                     <thead>
                         <tr>
@@ -166,8 +177,18 @@ if ($stmt) {
                                 <td><?= htmlspecialchars($tournament['start_date']); ?></td>
                                 <td><?= htmlspecialchars($tournament['end_date']); ?></td>
                                 <td>
-                                    <button>Edit</button>
-                                    <button>Delete</button>
+                                    <button 
+                                        id="edit_tournament_<?= $tournament['tournament_id']; ?>" 
+                                        class="edit-tournament-btn" 
+                                        data-tournament-id="<?= $tournament['tournament_id']; ?>">
+                                        Edit
+                                    </button>
+                                    <button 
+                                        id="delete_tournament_<?= $tournament['tournament_id']; ?>" 
+                                        class="delete-tournament-btn" 
+                                        data-tournament-id="<?= $tournament['tournament_id']; ?>">
+                                        Delete
+                                    </button>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -238,6 +259,68 @@ if ($stmt) {
                     </div>
 
                     <button type="submit" class="btn">Add Match</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Edit Match Modal -->
+        <div id="edit_match_modal" class="modal">
+            <div class="modal-content">
+                <span class="close" id="edit_match_close">&times;</span>
+                <h2>Edit Match</h2>
+                <form id="edit_match_form">
+                    <input type="hidden" id="edit_match_id">
+                    <div class="form-group">
+                        <label for="edit_team1_id">Team 1:</label>
+                        <select id="edit_team1_id" required>
+                            <option value="" disabled selected>Select Team</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_team2_id">Team 2:</label>
+                        <select id="edit_team2_id" required>
+                            <option value="" disabled selected>Select Team</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_match_date">Match Date:</label>
+                        <input type="datetime-local" id="edit_match_date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_match_venue">Venue:</label>
+                        <input type="text" id="edit_match_venue" required>
+                    </div>
+                    <div class="button-group">
+                        <button type="button" id="cancel_edit">Cancel</button>
+                        <button type="submit">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Edit Tournament Modal -->
+        <div id="edit_tournament_modal" class="modal">
+            <div class="modal-content">
+                <span class="close" id="edit_tournament_close">&times;</span>
+                <h2>Edit Tournament</h2>
+                <form id="edit_tournament_form">
+                    <input type="hidden" id="edit_tournament_id">
+                    <div class="form-group">
+                        <label for="edit_tournament_name">Tournament Name:</label>
+                        <input type="text" id="edit_tournament_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_start_date">Start Date:</label>
+                        <input type="date" id="edit_start_date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_end_date">End Date:</label>
+                        <input type="date" id="edit_end_date" required>
+                    </div>
+                    <div class="button-group">
+                        <button type="button" id="cancel_edit_tournament">Cancel</button>
+                        <button type="submit">Save Changes</button>
+                    </div>
                 </form>
             </div>
         </div>
