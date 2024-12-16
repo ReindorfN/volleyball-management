@@ -18,28 +18,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // Fetch data and populate sections (mock data for now)
-    const teamTable = document.querySelector("#team_table tbody");
-    const players = [
-        { name: "John Doe", position: "Spiker", jersey: 10 },
-        { name: "Jane Smith", position: "Setter", jersey: 8 },
-    ];
-
-    players.forEach(player => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-            <td>${player.name}</td>
-            <td>${player.position}</td>
-            <td>${player.jersey}</td>
-            <td>
-                <button>Edit</button>
-                <button>Remove</button>
-            </td>
-        `;
-        teamTable.appendChild(row);
-    });
-
-
     
     // Get modal and buttons
     const addPlayerBtn = document.getElementById("add_player_btn");
@@ -82,6 +60,107 @@ document.addEventListener("DOMContentLoaded", () => {
     window.addEventListener("click", (event) => {
         if (event.target === modal) {
             modal.style.display = "none";
+        }
+    });
+
+    // Player management elements
+    const editPlayerModal = document.getElementById("edit_player_modal");
+    const editPlayerClose = document.getElementById("edit_player_close");
+    const editPlayerForm = document.getElementById("edit_player_form");
+    const cancelEditPlayerBtn = document.getElementById("cancel_edit_player");
+
+    // Edit player button click handler
+    document.addEventListener('click', function(e) {
+        if (e.target && e.target.classList.contains('edit-player-btn')) {
+            const playerId = e.target.getAttribute('data-player-id');
+            openEditPlayerModal(playerId);
+        }
+    });
+
+    // Delete player button click handler
+    document.addEventListener('click', function(e) {
+        if (e.target && e.target.classList.contains('delete-player-btn')) {
+            const playerId = e.target.getAttribute('data-player-id');
+            if (confirm('Are you sure you want to delete this player?')) {
+                deletePlayer(playerId);
+            }
+        }
+    });
+
+    function openEditPlayerModal(playerId) {
+        editPlayerModal.style.display = "block";
+        
+        fetch(`../actions/fetch_player_details.php?player_id=${playerId}`)
+            .then(response => response.json())
+            .then(playerData => {
+                document.getElementById("edit_player_id").value = playerData.player_id;
+                document.getElementById("edit_position").value = playerData.position;
+                document.getElementById("edit_jersey_number").value = playerData.jersey_number;
+                document.getElementById("edit_team_id").value = playerData.team_id;
+            })
+            .catch(error => console.error("Error fetching player details:", error));
+    }
+
+    function deletePlayer(playerId) {
+        fetch(`../actions/delete_player.php`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `player_id=${playerId}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const playerRow = document.getElementById(`delete_player_${playerId}`).closest('tr');
+                playerRow.remove();
+                alert('Player deleted successfully!');
+            } else {
+                alert('Error deleting player: ' + data.error);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    editPlayerForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        
+        const formData = new FormData();
+        formData.append("player_id", document.getElementById("edit_player_id").value);
+        formData.append("position", document.getElementById("edit_position").value);
+        formData.append("jersey_number", document.getElementById("edit_jersey_number").value);
+        formData.append("team_id", document.getElementById("edit_team_id").value);
+
+        fetch("../actions/update_player.php", {
+            method: "POST",
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert("Player updated successfully!");
+                editPlayerModal.style.display = "none";
+                location.reload();
+            } else {
+                alert("Error updating player: " + data.error);
+            }
+        })
+        .catch(error => console.error("Error updating player:", error));
+    });
+
+    // Modal close handlers
+    editPlayerClose.addEventListener("click", () => {
+        editPlayerModal.style.display = "none";
+    });
+
+    cancelEditPlayerBtn.addEventListener("click", () => {
+        editPlayerModal.style.display = "none";
+    });
+
+    // Add to your existing window click handler
+    window.addEventListener("click", (event) => {
+        if (event.target === editPlayerModal) {
+            editPlayerModal.style.display = "none";
         }
     });
 

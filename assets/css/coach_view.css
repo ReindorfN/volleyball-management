@@ -1,87 +1,75 @@
-/* General Styling */
-body {
-    font-family: Arial, sans-serif;
+* {
     margin: 0;
     padding: 0;
-    background: url("../images/background.jpg") no-repeat;
-    background-size: cover;
-    background-position: center;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    background-color: #f4f4f4;
 }
 
 header {
-    background-color: transparent;
+    background-color: #333;
     color: white;
-    padding: 20px;
+    padding: 1rem;
 }
 
 header h1 {
-    margin: 0;
+    margin-bottom: 1rem;
 }
 
 nav ul {
     list-style: none;
-    padding: 0;
-    margin: 10px 0 0 0;
     display: flex;
-    gap: 15px;
+    gap: 1rem;
 }
 
 nav ul li a {
-    text-decoration: none;
     color: white;
-    padding: 8px 15px;
-    background-color: #0056b3;
-    border-radius: 5px;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    transition: background-color 0.3s;
 }
 
+nav ul li a:hover,
 nav ul li a.active {
-    background-color: #ffc107;
-    color: black;
+    background-color: #555;
 }
 
 main {
-    padding: 20px;
-    /* background-color: #000B58; */
-    height: 100vh;
+    padding: 2rem;
 }
 
 .section {
     display: none;
+    background-color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .section.active {
     display: block;
 }
-.section h2{
-    text-align: center;
-}
-.overview {
-    display: flex;
-    gap: 20px;
-}
 
 .stat {
-    flex: 1;
-    background-color: rgb(255, 255, 255, 0.8);
-    /* backdrop-filter: blur(25px); */
-    border: 2px solid #ddd;
-    padding: 15px;
-    border-radius: 5px;
-}
-.stat:hover{
-    backdrop-filter: blur(25px);
+    margin-top: 2rem;
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 10px;
+    margin-top: 1rem;
 }
 
-table th, table td {
-    border: 1px solid #ddd;
-    padding: 8px;
+table th,
+table td {
+    padding: 0.75rem;
     text-align: left;
+    border-bottom: 1px solid #ddd;
 }
 
 table th {
@@ -89,117 +77,101 @@ table th {
     color: white;
 }
 
-#team_thingy{
-    padding: 20px;
-    background-color: whitesmoke;
-    border-radius: 15px;
+table tr:nth-child(even) {
+    background-color: #f8f9fa;
 }
 
-
-.add_player_form{
-    position: relative;
-    left: 30%;
-    top: 15px;
-    width: 450px;
-    background: transparent;
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(15px);
-    justify-content: center;
-    padding: 30px 10px 10px 5px;
-    display: none;
-    border-radius: 15px;
-}
-#addplayer-form h1{
-    text-align: center;
-    color: black;
+table tr:hover {
+    background-color: #f2f2f2;
 }
 
-#addplayer-form.input-box {
-    width: 100%;
-    height: 40px;
-    /* margin: 30px 0; */
-    padding: 25px 0;
-    border: 2px solid black;
-}
-
-#addplayer-form .input-box input {
-    width: 100%;
-    background: transparent;
+button {
+    background-color: #007bff;
+    color: white;
     border: none;
-    outline: none;
-    color: black;
-    border: 1px solid black;
-    border-radius: 40px;
-    font-size: 15px;
-    padding: 20px 5px 20px 10px;
-}
-
-#addplayer-form .input-box ul {
-    display: flex;
-    list-style: none;
-    width: 100%;
-    gap: 40px;
-    padding-left: 0;
-}
-
-.input-box input::placeholder{
-    color: black;
-}
-
-.btn{
-    width: 70%;
-    height: 45px;
-    border: none;
-    outline: none;
-    background: #fff;
-    border-radius: 35px;
-    font-size: 17px;
-    font-weight: 600;
-    color: #000;
-    margin-top: 25px;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
     cursor: pointer;
+    transition: background-color 0.3s;
 }
 
-/* Modal overlay */
+button:hover {
+    background-color: #0056b3;
+}
+
 .modal {
-    display: none; /* Hidden by default */
+    display: none;
     position: fixed;
-    z-index: 1000;
-    left: 0;
     top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.5); /* Black background with transparency */
+    background-color: rgba(0, 0, 0, 0.5);
 }
 
-/* Modal content */
 .modal-content {
-    background-color: whitesmoke;
-    margin: 10% auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 40%;
-    border-radius: 10px;
+    background-color: white;
+    margin: 5% auto;
+    padding: 2rem;
+    width: 90%;
+    max-width: 500px;
+    border-radius: 8px;
     position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
 }
 
-/* Close button */
 .close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
+    position: absolute;
+    right: 1rem;
+    top: 0.5rem;
+    font-size: 1.5rem;
     cursor: pointer;
 }
 
-.close:hover, .close:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
+.form-group {
+    margin-bottom: 1rem;
 }
 
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+}
 
-footer{
-    color: whitesmoke;
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+#logout_btn {
+    background-color: #dc3545;
+}
+
+#logout_btn:hover {
+    background-color: #c82333;
+}
+
+.edit-player-btn,
+.set-strategy-btn,
+.update-stats-btn {
+    background-color: #28a745;
+    margin-right: 0.5rem;
+}
+
+.delete-player-btn {
+    background-color: #dc3545;
+}
+
+.edit-player-btn:hover,
+.set-strategy-btn:hover,
+.update-stats-btn:hover {
+    background-color: #218838;
+}
+
+.delete-player-btn:hover {
+    background-color: #c82333;
 }
