@@ -55,22 +55,45 @@ if (!empty($teams)) {
 
 // Fetch upcoming matches for coach's teams
 if (!empty($teams)) {
+    $teamIds = array_column($teams, 'team_id');
+    $teamIdsStr = implode(',', $teamIds);
+    
+    // Add debug output
+    echo "<!-- Debug: Team IDs: $teamIdsStr -->";
+    
     $query = "SELECT m.match_id, t1.team_name as team1_name, 
                      t2.team_name as team2_name, m.match_date, 
-                     m.venue, m.match_status, m.score_team1, m.score_team2
+                     m.venue, m.match_status, m.score_team1, m.score_team2,
+                     ms.strategy_text
               FROM v_ball_matches m
               JOIN v_ball_teams t1 ON m.team1_id = t1.team_id
               JOIN v_ball_teams t2 ON m.team2_id = t2.team_id
+              LEFT JOIN v_ball_match_strategies ms ON m.match_id = ms.match_id 
+                   AND ms.coach_id = ?
               WHERE (m.team1_id IN ($teamIdsStr) OR m.team2_id IN ($teamIdsStr))
                 AND m.match_date >= CURDATE()
               ORDER BY m.match_date ASC";
     
-    $result = $conn->query($query);
-    if ($result) {
-        while ($row = $result->fetch_assoc()) {
-            $upcomingMatches[] = $row;
+    if($stmt = $conn->prepare($query)) {
+        $stmt->bind_param("i", $coachId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        // Add debug output
+        echo "<!-- Debug: Number of matches found: " . $result->num_rows . " -->";
+        
+        if ($result) {
+            while ($row = $result->fetch_assoc()) {
+                $upcomingMatches[] = $row;
+            }
         }
+        $stmt->close();
     }
+}
+
+// Add this debug code after line 82
+if (empty($upcomingMatches)) {
+    echo "<!-- Debug: No matches found. Teams: " . print_r($teams, true) . " -->";
 }
 
 // Fetch player statistics
@@ -112,7 +135,7 @@ $conn->close();
     <link rel="stylesheet" href="../assets/css/coach_view.css">
     <link rel="icon" href="../assets/images/v-ball_favicon.ico">
 </head>
-<body>
+<body data-coach-id="<?php echo $_SESSION['user_id']; ?>">
     <header>
         <h1>Ashesi Volleyball Management | Coach</h1>
         <nav>
@@ -301,10 +324,14 @@ $conn->close();
             <form id="strategy_form">
                 <input type="hidden" id="strategy_match_id">
                 <div class="form-group">
-                    <label for="strategy_text">Strategy:</label>
-                    <textarea id="strategy_text" rows="5" required></textarea>
+                    <label for="strategy_text">Strategy Notes:</label>
+                    <textarea id="strategy_text" name="strategy" rows="6" required 
+                        placeholder="Enter match strategy details..."></textarea>
                 </div>
-                <button type="submit">Save Strategy</button>
+                <div class="button-group">
+                    <button type="button" id="cancel_strategy">Cancel</button>
+                    <button type="submit">Save Strategy</button>
+                </div>
             </form>
         </div>
     </div>

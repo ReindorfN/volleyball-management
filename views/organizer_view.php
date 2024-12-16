@@ -3,7 +3,7 @@ session_start();
 
 // Redirect to login if not authenticated
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'organizer') {
-    header("Location: ../views/login.php");
+    header("Location: ../views/login.html");
     exit();
 }
 

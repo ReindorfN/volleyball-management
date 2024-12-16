@@ -175,3 +175,31 @@ button:hover {
 .delete-player-btn:hover {
     background-color: #c82333;
 }
+
+#strategy_text {
+    width: 100%;
+    min-height: 150px;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    resize: vertical;
+}
+
+.button-group {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.button-group button {
+    padding: 8px 15px;
+}
+
+#cancel_strategy {
+    background-color: #6c757d;
+}
+
+#cancel_strategy:hover {
+    background-color: #5a6268;
+}

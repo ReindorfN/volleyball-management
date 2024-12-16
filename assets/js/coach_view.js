@@ -164,4 +164,78 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
+    // Strategy modal elements
+    const strategyModal = document.getElementById("strategy_modal");
+    const strategyClose = document.getElementById("strategy_close");
+    const strategyForm = document.getElementById("strategy_form");
+    const cancelStrategyBtn = document.getElementById("cancel_strategy");
+
+    // Strategy button click handler
+    document.addEventListener('click', function(e) {
+        if (e.target && e.target.classList.contains('set-strategy-btn')) {
+            const matchId = e.target.getAttribute('data-match-id');
+            openStrategyModal(matchId);
+        }
+    });
+
+    function openStrategyModal(matchId) {
+        strategyModal.style.display = "block";
+        document.getElementById("strategy_match_id").value = matchId;
+        
+        // Get coach_id from PHP session
+        const coachId = document.body.getAttribute('data-coach-id');
+        
+        // Fetch existing strategy if any
+        fetch(`../actions/fetch_strategy.php?match_id=${matchId}&coach_id=${coachId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.strategy) {
+                    document.getElementById("strategy_text").value = data.strategy;
+                } else {
+                    document.getElementById("strategy_text").value = '';
+                }
+            })
+            .catch(error => console.error("Error fetching strategy:", error));
+    }
+
+    strategyForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        
+        const formData = new FormData();
+        formData.append("match_id", document.getElementById("strategy_match_id").value);
+        formData.append("strategy", document.getElementById("strategy_text").value);
+        formData.append("coach_id", document.body.getAttribute('data-coach-id'));
+
+        fetch("../actions/update_strategy.php", {
+            method: "POST",
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert("Strategy updated successfully!");
+                strategyModal.style.display = "none";
+            } else {
+                alert("Error updating strategy: " + data.error);
+            }
+        })
+        .catch(error => console.error("Error:", error));
+    });
+
+    // Strategy modal close handlers
+    strategyClose.addEventListener("click", () => {
+        strategyModal.style.display = "none";
+    });
+
+    cancelStrategyBtn.addEventListener("click", () => {
+        strategyModal.style.display = "none";
+    });
+
+    // Add to your existing window click handler
+    window.addEventListener("click", (event) => {
+        if (event.target === strategyModal) {
+            strategyModal.style.display = "none";
+        }
+    });
+
 });

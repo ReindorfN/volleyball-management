@@ -1,56 +1,31 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // Select navigation buttons and sections
-    const navLinks = document.querySelectorAll("nav ul li a");
-    const sections = document.querySelectorAll("main .section");
+    // Profile Modal Elements
+    const profileModal = document.getElementById('profile-modal');
+    const profileBtn = document.getElementById('profile-btn');
+    const closeBtn = profileModal.querySelector('.close');
+    const cancelBtn = profileModal.querySelector('.cancel-btn');
+    const profileForm = document.getElementById('profile-form');
+    const profilePicInput = document.getElementById('profile-pic');
+    const profilePreview = document.getElementById('profile-preview');
 
-    // Highlight active section when a navigation link is clicked
-    navLinks.forEach(link => {
-        link.addEventListener("click", (event) => {
-            event.preventDefault();
+    // Profile Modal Functions
+    function openProfileModal() {
+        profileModal.style.display = 'block';
+    }
 
-            // Update active link styling
-            navLinks.forEach(nav => nav.classList.remove("active"));
-            link.classList.add("active");
+    function closeProfileModal() {
+        profileModal.style.display = 'none';
+    }
 
-            // Show the corresponding section
-            const targetSection = document.querySelector(link.getAttribute("href"));
-            sections.forEach(section => section.classList.remove("active"));
-            targetSection.classList.add("active");
-        });
+    // Event Listeners for Profile Modal
+    profileBtn.addEventListener('click', openProfileModal);
+    closeBtn.addEventListener('click', closeProfileModal);
+    cancelBtn.addEventListener('click', closeProfileModal);
+
+    // Close modal on outside click
+    window.addEventListener('click', (e) => {
+        if (e.target === profileModal) {
+            closeProfileModal();
+        }
     });
-
-    // Fetch announcements dynamically (optional)
-    const announcementsSection = document.getElementById("announcements");
-    if (announcementsSection) {
-        fetchAnnouncements(announcementsSection);
-    }
-
-    /**
-     * Fetch and display announcements dynamically.
-     */
-    function fetchAnnouncements(section) {
-        // Make an AJAX call to fetch announcements
-        fetch("../actions/fetch_announcements.php")
-            .then(response => response.json())
-            .then(data => {
-                const announcementList = section.querySelector("ul");
-                announcementList.innerHTML = ""; // Clear existing announcements
-
-                if (data.error) {
-                    console.error("Error fetching announcements:", data.error);
-                    return;
-                }
-
-                // Populate the announcements
-                data.forEach(announcement => {
-                    const listItem = document.createElement("li");
-                    listItem.innerHTML = `
-                        <p>${announcement.announcement_text}</p>
-                        <small>Posted on ${new Date(announcement.created_at).toLocaleString()}</small>
-                    `;
-                    announcementList.appendChild(listItem);
-                });
-            })
-            .catch(error => console.error("Error fetching announcements:", error));
-    }
 });
