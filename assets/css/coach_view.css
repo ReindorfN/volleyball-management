@@ -203,3 +203,139 @@ button:hover {
 #cancel_strategy:hover {
     background-color: #5a6268;
 }
+
+/* Profile Styles */
+.profile-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    padding: 1rem;
+}
+
+.profile-card,
+.team-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+}
+
+.profile-header,
+.team-header {
+    border-bottom: 1px solid #eee;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+}
+
+.profile-details,
+.team-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.profile-details p,
+.team-details p {
+    margin: 0;
+    color: #666;
+}
+
+.profile-details strong,
+.team-details strong {
+    color: #333;
+    margin-right: 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .profile-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Update navigation styles */
+.sidebar nav {
+    display: flex;
+    flex-direction: column;
+    height: calc(100% - 120px); /* Adjust based on your logo height */
+}
+
+.main-nav {
+    flex-grow: 1;
+}
+
+.user-nav {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 1rem;
+}
+
+.user-nav li a {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.user-nav li a i {
+    width: 20px;
+}
+
+/* Profile Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: white;
+    margin: 5% auto;
+    padding: 2rem;
+    width: 90%;
+    max-width: 500px;
+    border-radius: 8px;
+    position: relative;
+}
+
+.close {
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #333;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.btn-primary:hover {
+    background-color: var(--secondary-color);
+}

@@ -27,6 +27,7 @@ $adminData = $stmt->get_result()->fetch_assoc();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
     <link rel="stylesheet" href="../assets/css/admin_view.css">
+    <link rel="stylesheet" href="../assets/css/admin_modals.css">
 </head>
 <body>
     <div class="admin-container">
@@ -69,7 +70,7 @@ $adminData = $stmt->get_result()->fetch_assoc();
                 <div class="header-user">
                     <span class="user-name"><?= htmlspecialchars($adminData['first_name'] . ' ' . $adminData['last_name']) ?></span>
                     <button id="profile-btn" class="profile-icon">
-                        <img src="<?= htmlspecialchars($adminData['profile_pic'] ?? '../assets/images/default-avatar.png') ?>" 
+                        <img src="<?= htmlspecialchars($adminData['profile_pic'] ?? '../assets/images/default-avatar.jpg') ?>" 
                              alt="Profile" class="profile-img">
                     </button>
                     <a href="../actions/logout.php" class="logout-btn">Logout</a>
@@ -169,6 +170,7 @@ $adminData = $stmt->get_result()->fetch_assoc();
     <?php include 'admin_modals.php'; ?>
 
     <script src="../assets/js/admin_view.js"></script>
+    <script src="../assets/js/admin_modals.js"></script>
 </body>
 </html>
 <?php

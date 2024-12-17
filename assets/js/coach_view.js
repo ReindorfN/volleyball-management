@@ -238,4 +238,204 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
+    // Add this function to your existing coach_view.js
+    async function loadStatistics() {
+        try {
+            const response = await fetch('../actions/get_player_stats.php');
+            const data = await response.json();
+            
+            const statisticsTable = document.getElementById('statistics_table');
+            if (data.success) {
+                statisticsTable.innerHTML = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Player Name</th>
+                                <th>Position</th>
+                                <th>Jersey #</th>
+                                <th>Matches</th>
+                                <th>Points/Game</th>
+                                <th>Assists/Game</th>
+                                <th>Blocks/Game</th>
+                                <th>Digs/Game</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.players.map(player => `
+                                <tr>
+                                    <td>${player.player_name}</td>
+                                    <td>${player.position}</td>
+                                    <td>${player.jersey_number}</td>
+                                    <td>${player.matches_played}</td>
+                                    <td>${player.avg_points}</td>
+                                    <td>${player.avg_assists}</td>
+                                    <td>${player.avg_blocks}</td>
+                                    <td>${player.avg_digs}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                    ${data.players.length === 0 ? '<p class="no-data">No statistics available</p>' : ''}
+                `;
+            } else {
+                statisticsTable.innerHTML = `<p class="error-message">${data.error || 'Failed to load statistics'}</p>`;
+            }
+        } catch (error) {
+            console.error('Error loading statistics:', error);
+            document.getElementById('statistics_table').innerHTML = 
+                '<p class="error-message">Error loading statistics</p>';
+        }
+    }
+
+    // Add this function to your existing coach_view.js
+    async function loadProfile() {
+        try {
+            const response = await fetch('../actions/get_coach_profile.php');
+            const data = await response.json();
+            
+            if (data.success) {
+                const profile = data.profile;
+                
+                // Update profile information
+                document.getElementById('profile-info').innerHTML = `
+                    <div class="profile-card">
+                        <div class="profile-header">
+                            <h3>Coach Information</h3>
+                        </div>
+                        <div class="profile-details">
+                            <p><strong>Name:</strong> ${profile.first_name} ${profile.last_name}</p>
+                            <p><strong>Email:</strong> ${profile.email}</p>
+                        </div>
+                    </div>
+                `;
+
+                // Update team information
+                document.getElementById('team-info').innerHTML = `
+                    <div class="team-card">
+                        <div class="team-header">
+                            <h3>Team Information</h3>
+                        </div>
+                        <div class="team-details">
+                            <p><strong>Team Name:</strong> ${profile.team_name || 'No team assigned'}</p>
+                            <p><strong>Total Players:</strong> ${profile.player_count}</p>
+                            <p><strong>Matches Played:</strong> ${profile.matches_played}</p>
+                            <p><strong>Upcoming Matches:</strong> ${profile.upcoming_matches}</p>
+                        </div>
+                    </div>
+                `;
+            } else {
+                showErrorMessage(data.error || 'Failed to load profile');
+            }
+        } catch (error) {
+            console.error('Error loading profile:', error);
+            showErrorMessage('Error loading profile');
+        }
+    }
+
+    // Add profile link click handler
+    document.querySelector('a[href="#profile"]').addEventListener('click', () => {
+        loadProfile();
+    });
+
+    // Load all data
+    loadDashboardStats();
+    loadTeamPlayers();
+    loadMatches();
+    loadStatistics();
+    // Only load profile if it's the active section
+    if (document.getElementById('profile').classList.contains('active')) {
+        loadProfile();
+    }
+
+    // Profile Modal
+    const profileModal = document.getElementById('profile-modal');
+    const profileBtn = document.getElementById('profile-btn');
+    const closeBtn = profileModal.querySelector('.close');
+    const profileForm = document.getElementById('profile-form');
+
+    // Open profile modal
+    profileBtn.addEventListener('click', async () => {
+        try {
+            const response = await fetch('../actions/get_coach_profile.php');
+            const data = await response.json();
+            
+            if (data.success) {
+                // Populate form with current data
+                profileForm.first_name.value = data.profile.first_name;
+                profileForm.last_name.value = data.profile.last_name;
+                profileForm.email.value = data.profile.email;
+                
+                // Clear password fields
+                profileForm.new_password.value = '';
+                profileForm.confirm_password.value = '';
+                
+                profileModal.style.display = 'block';
+            } else {
+                showErrorMessage(data.error || 'Failed to load profile');
+            }
+        } catch (error) {
+            console.error('Error loading profile:', error);
+            showErrorMessage('Error loading profile');
+        }
+    });
+
+    // Close modal
+    closeBtn.addEventListener('click', () => {
+        profileModal.style.display = 'none';
+    });
+
+    // Close modal when clicking outside
+    window.addEventListener('click', (event) => {
+        if (event.target === profileModal) {
+            profileModal.style.display = 'none';
+        }
+    });
+
+    // Handle form submission
+    profileForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        // Validate passwords if provided
+        if (profileForm.new_password.value) {
+            if (profileForm.new_password.value !== profileForm.confirm_password.value) {
+                showErrorMessage('Passwords do not match');
+                return;
+            }
+            if (profileForm.new_password.value.length < 6) {
+                showErrorMessage('Password must be at least 6 characters');
+                return;
+            }
+        }
+
+        try {
+            const response = await fetch('../actions/update_coach_profile.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    first_name: profileForm.first_name.value,
+                    last_name: profileForm.last_name.value,
+                    email: profileForm.email.value,
+                    new_password: profileForm.new_password.value
+                })
+            });
+
+            const data = await response.json();
+            
+            if (data.success) {
+                showSuccessMessage('Profile updated successfully');
+                profileModal.style.display = 'none';
+                // Reload profile data if shown
+                if (document.getElementById('profile').classList.contains('active')) {
+                    loadProfile();
+                }
+            } else {
+                showErrorMessage(data.error || 'Failed to update profile');
+            }
+        } catch (error) {
+            console.error('Error updating profile:', error);
+            showErrorMessage('Error updating profile');
+        }
+    });
 });
