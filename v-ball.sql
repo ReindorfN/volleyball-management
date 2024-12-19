@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Dec 17, 2024 at 09:27 PM
+-- Generation Time: Dec 19, 2024 at 04:36 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- 
+-- Database: `v-ball`
 --
 
 -- --------------------------------------------------------
@@ -43,7 +43,10 @@ INSERT INTO `v_ball_activity_log` (`activity_id`, `user_id`, `activity_type`, `d
 (1, 15, 'USER_CREATION', 'Added new coach: Hayford Bo', '2024-12-17 17:52:07'),
 (2, 15, 'TEAM_CREATION', 'Added new team: Mighty Hitters', '2024-12-17 17:53:00'),
 (3, 15, 'ANNOUNCEMENT_CREATED', 'Created general announcement: System update', '2024-12-17 19:40:44'),
-(4, 15, 'ANNOUNCEMENT_CREATED', 'Created general announcement: System update', '2024-12-17 19:40:44');
+(4, 15, 'ANNOUNCEMENT_CREATED', 'Created general announcement: System update', '2024-12-17 19:40:44'),
+(5, 5, 'PLAYER_CREATION', 'Added new player: Israel Tamaka', '2024-12-19 01:50:01'),
+(6, 15, 'ANNOUNCEMENT_CREATED', 'Created general announcement: New Alert', '2024-12-19 02:55:55'),
+(7, 15, 'ANNOUNCEMENT_CREATED', 'Created general announcement: New Alert', '2024-12-19 02:55:55');
 
 -- --------------------------------------------------------
 
@@ -146,7 +149,11 @@ CREATE TABLE `v_ball_notifications` (
 
 INSERT INTO `v_ball_notifications` (`notification_id`, `sender_id`, `notification_type`, `title`, `message`, `team_id`, `created_at`) VALUES
 (1, 15, 'GENERAL', 'System update', 'There will be a system update tomorrow.', NULL, '2024-12-17 19:40:44'),
-(2, 15, 'GENERAL', 'System update', 'There will be a system update tomorrow.', NULL, '2024-12-17 19:40:44');
+(2, 15, 'GENERAL', 'System update', 'There will be a system update tomorrow.', NULL, '2024-12-17 19:40:44'),
+(3, 5, 'GENERAL', 'Win for The blazers', 'This is just to hype up my fans and assure you we will come home with the win in our next match.', NULL, '2024-12-19 01:43:26'),
+(4, 5, 'TEAM_SPECIFIC', 'Training This Week', 'Please note that there will be training this week on Thursday at 7pm on the new court. DON\'T BE LATE!!!', 2, '2024-12-19 02:31:24'),
+(5, 15, 'GENERAL', 'New Alert', 'Please reset your passwords. URGENT!!!', NULL, '2024-12-19 02:55:55'),
+(6, 15, 'GENERAL', 'New Alert', 'Please reset your passwords. URGENT!!!', NULL, '2024-12-19 02:55:55');
 
 -- --------------------------------------------------------
 
@@ -183,7 +190,37 @@ INSERT INTO `v_ball_notification_recipients` (`notification_id`, `user_id`, `rea
 (2, 13, 0, NULL),
 (2, 14, 0, NULL),
 (2, 15, 0, NULL),
-(2, 16, 0, NULL);
+(2, 16, 0, NULL),
+(3, 4, 0, NULL),
+(3, 5, 0, NULL),
+(3, 6, 0, NULL),
+(3, 7, 0, NULL),
+(3, 8, 0, NULL),
+(3, 13, 0, NULL),
+(3, 14, 0, NULL),
+(3, 15, 0, NULL),
+(3, 16, 0, NULL),
+(4, 18, 0, NULL),
+(5, 4, 0, NULL),
+(5, 5, 0, NULL),
+(5, 6, 0, NULL),
+(5, 7, 0, NULL),
+(5, 8, 0, NULL),
+(5, 13, 0, NULL),
+(5, 14, 0, NULL),
+(5, 15, 0, NULL),
+(5, 16, 0, NULL),
+(5, 18, 0, NULL),
+(6, 4, 0, NULL),
+(6, 5, 0, NULL),
+(6, 6, 0, NULL),
+(6, 7, 0, NULL),
+(6, 8, 0, NULL),
+(6, 13, 0, NULL),
+(6, 14, 0, NULL),
+(6, 15, 0, NULL),
+(6, 16, 0, NULL),
+(6, 18, 0, NULL);
 
 -- --------------------------------------------------------
 
@@ -206,7 +243,8 @@ CREATE TABLE `v_ball_players` (
 
 INSERT INTO `v_ball_players` (`player_id`, `user_id`, `team_id`, `position`, `jersey_number`, `joined_at`) VALUES
 (1, 13, 1, 'server', 20, '2024-12-12 21:33:26'),
-(2, 14, 1, 'spiker', 7, '2024-12-12 21:41:12');
+(2, 14, 1, 'spiker', 7, '2024-12-12 21:41:12'),
+(3, 18, 2, 'setter', 8, '2024-12-19 01:50:01');
 
 -- --------------------------------------------------------
 
@@ -223,6 +261,13 @@ CREATE TABLE `v_ball_statistics` (
   `serves` int(11) DEFAULT 0,
   `errors` int(11) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `v_ball_statistics`
+--
+
+INSERT INTO `v_ball_statistics` (`stat_id`, `match_id`, `player_id`, `spikes`, `blocks`, `serves`, `errors`) VALUES
+(1, 2, 1, 1, 2, 6, 3);
 
 -- --------------------------------------------------------
 
@@ -298,7 +343,8 @@ INSERT INTO `v_ball_users` (`user_id`, `first_name`, `last_name`, `password_hash
 (13, 'Sam', 'Kay', '$2y$10$3TapP.wKAeod13deZX2iM.BoFp78jZPqCBehmFMiNv0B07jKdNfSW', 'samkay@gmail.com', 'player', 5, '2024-12-12 21:33:26', NULL),
 (14, 'Ibrahim', 'Dasuki', '$2y$10$hD7zPhJu3Vf67wIfHhshoeN9JktokUpX1vham2I4IU.vO/oEsP1Ea', 'ibrahim@gmail.com', 'player', 5, '2024-12-12 21:41:12', NULL),
 (15, 'admin', 'admin', '$2y$10$TFYU/sj83Kvt9lsRi94bQe/boy7wZZf9pq1FBCsyiRluARvPjX4Z6', 'admin@test.com', 'admin', NULL, '2024-12-16 20:04:44', NULL),
-(16, 'Hayford', 'Bo', '$2y$10$/B9N3pUF7YeShh2tuAy4J.rxbV8R7rkCp9NPWPQTIa8fkhHr90Gde', 'hfd@mail.com', 'coach', 15, '2024-12-17 17:52:07', NULL);
+(16, 'Hayford', 'Bo', '$2y$10$/B9N3pUF7YeShh2tuAy4J.rxbV8R7rkCp9NPWPQTIa8fkhHr90Gde', 'hfd@mail.com', 'coach', 15, '2024-12-17 17:52:07', NULL),
+(18, 'Israel', 'Tamaka', '$2y$10$cShjlvosi.fRTSoIj6eFBOB7EasKW.ZhdqiELOm02mg7V9aASAaRe', 'tamaka@gmail.com', 'player', 5, '2024-12-19 01:50:01', NULL);
 
 --
 -- Indexes for dumped tables
@@ -406,7 +452,7 @@ ALTER TABLE `v_ball_users` ADD FULLTEXT KEY `username` (`username`);
 -- AUTO_INCREMENT for table `v_ball_activity_log`
 --
 ALTER TABLE `v_ball_activity_log`
-  MODIFY `activity_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `activity_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `v_ball_announcements`
@@ -436,19 +482,19 @@ ALTER TABLE `v_ball_match_strategies`
 -- AUTO_INCREMENT for table `v_ball_notifications`
 --
 ALTER TABLE `v_ball_notifications`
-  MODIFY `notification_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `notification_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `v_ball_players`
 --
 ALTER TABLE `v_ball_players`
-  MODIFY `player_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `player_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `v_ball_statistics`
 --
 ALTER TABLE `v_ball_statistics`
-  MODIFY `stat_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `stat_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `v_ball_teams`
@@ -466,7 +512,7 @@ ALTER TABLE `v_ball_tournaments`
 -- AUTO_INCREMENT for table `v_ball_users`
 --
 ALTER TABLE `v_ball_users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- Constraints for dumped tables

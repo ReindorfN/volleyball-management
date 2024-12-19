@@ -155,11 +155,28 @@ $adminData = $stmt->get_result()->fetch_assoc();
                 <!-- Announcements Section -->
                 <section id="announcements" class="content-section">
                     <div class="section-header">
-                        <h2>Manage Announcements</h2>
-                        <button class="add-btn" id="add-announcement-btn">New Announcement</button>
+                        <h2>System Announcements</h2>
+                        <button class="add-btn" id="add-system-announcement-btn">Create Announcement</button>
                     </div>
-                    <div class="announcements-list" id="announcements-list">
-                        <!-- Announcements will be loaded here -->
+
+                    <div class="announcements-container">
+                        <div class="announcements-list" id="system-announcements-list">
+                            <!-- System-wide announcements will be loaded here -->
+                        </div>
+                    </div>
+
+                    <!-- System Announcement Modal -->
+                    <div id="system-announcement-modal" class="modal">
+                        <div class="modal-content">
+                            <span class="close">&times;</span>
+                            <h2>Create System Announcement</h2>
+                            <form id="system-announcement-form">
+                                <input type="text" name="title" placeholder="Announcement Title" required>
+                                <textarea name="message" placeholder="Announcement Message" required></textarea>
+                                <input type="hidden" name="type" value="GENERAL">
+                                <button type="submit">Send Announcement</button>
+                            </form>
+                        </div>
                     </div>
                 </section>
             </div>

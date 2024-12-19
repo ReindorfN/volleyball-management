@@ -2,14 +2,21 @@
 // Start the session
 session_start();
 
-// Unset all session variables
-$_SESSION = [];
+// Clear all session variables
+$_SESSION = array();
+
+// Destroy the session cookie
+if (isset($_COOKIE[session_name()])) {
+    setcookie(session_name(), '', time()-3600, '/');
+}
 
 // Destroy the session
 session_destroy();
 
-// Redirect to the landing page
-header("Location: ../views/login.html"); // Adjust the path to your landing page
-exit();
+// Return JSON response
+header('Content-Type: application/json');
+echo json_encode(['success' => true]);
+header('Location: ../index.html');
+exit;
 ?>
 

@@ -1,5 +1,8 @@
 console.log('Fan view JS loaded');
 
+const REFRESH_INTERVAL = 30000; // Real-time data loading after every 30 seconds
+let refreshIntervals = {};
+
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM fully loaded');
     const navLinks = document.querySelectorAll("nav ul li a");
@@ -320,5 +323,225 @@ document.addEventListener('DOMContentLoaded', function() {
             const teamId = e.target.dataset.teamId;
             toggleFollowTeam(teamId, e.target);
         }
+    });
+
+    // Add real-time update interval
+    const REFRESH_INTERVAL = 30000; // 30 seconds
+    let refreshIntervals = {};
+
+    // Load matches into upcoming and featured sections
+    async function loadMatches() {
+        try {
+            const response = await fetch('../actions/get_matches.php');
+            const data = await response.json();
+            
+            if (data.success) {
+                // Populate upcoming matches
+                const upcomingContainer = document.getElementById('upcoming-matches');
+                const upcomingMatches = data.matches.filter(match => new Date(match.match_date) > new Date());
+                
+                if (upcomingContainer) {
+                    upcomingContainer.innerHTML = upcomingMatches.map(match => `
+                        <div class="match-card">
+                            <div class="match-header">
+                                <span class="match-date">${formatDateTime(match.match_date)}</span>
+                                <span class="match-venue">${match.venue}</span>
+                            </div>
+                            <div class="match-teams">
+                                <div class="team">
+                                    <span class="team-name">${match.team1_name}</span>
+                                    <span class="team-score">${match.score_team1 || '-'}</span>
+                                </div>
+                                <span class="vs">VS</span>
+                                <div class="team">
+                                    <span class="team-name">${match.team2_name}</span>
+                                    <span class="team-score">${match.score_team2 || '-'}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+
+                // Populate featured matches
+                const featuredContainer = document.getElementById('featured-matches');
+                const featuredMatches = data.matches.filter(match => match.is_featured);
+                
+                if (featuredContainer) {
+                    featuredContainer.innerHTML = featuredMatches.map(match => `
+                        <div class="match-card featured">
+                            <div class="match-header">
+                                <span class="match-date">${formatDateTime(match.match_date)}</span>
+                                <span class="match-venue">${match.venue}</span>
+                            </div>
+                            <div class="match-teams">
+                                <div class="team">
+                                    <span class="team-name">${match.team1_name}</span>
+                                    <span class="team-score">${match.score_team1 || '-'}</span>
+                                </div>
+                                <span class="vs">VS</span>
+                                <div class="team">
+                                    <span class="team-name">${match.team2_name}</span>
+                                    <span class="team-score">${match.score_team2 || '-'}</span>
+                                </div>
+                            </div>
+                            <div class="match-footer">
+                                <button class="btn-details" onclick="showMatchDetails(${match.match_id})">
+                                    View Details
+                                </button>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            }
+        } catch (error) {
+            console.error('Error loading matches:', error);
+        }
+    }
+
+    // Load followed teams
+    async function loadMyTeams() {
+        try {
+            const response = await fetch('../actions/get_followed_teams.php');
+            const data = await response.json();
+            
+            if (data.success) {
+                const teamsContainer = document.getElementById('my-teams');
+                if (teamsContainer) {
+                    teamsContainer.innerHTML = data.teams.map(team => `
+                        <div class="team-card">
+                            <div class="team-header">
+                                <h3>${team.team_name}</h3>
+                                <button class="btn-unfollow" onclick="unfollowTeam(${team.team_id})">
+                                    Unfollow
+                                </button>
+                            </div>
+                            <div class="team-info">
+                                <p>Coach: ${team.coach_name}</p>
+                                <p>Players: ${team.player_count}</p>
+                                <p>Next Match: ${team.next_match ? formatDateTime(team.next_match.match_date) : 'No upcoming matches'}</p>
+                            </div>
+                            <div class="team-stats">
+                                <span>Wins: ${team.stats.wins}</span>
+                                <span>Losses: ${team.stats.losses}</span>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            }
+        } catch (error) {
+            console.error('Error loading teams:', error);
+        }
+    }
+
+    // Follow/Unfollow team functions
+    async function followTeam(teamId) {
+        try {
+            const response = await fetch('../actions/follow_team.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ team_id: teamId })
+            });
+            
+            const data = await response.json();
+            if (data.success) {
+                showSuccessMessage('Team followed successfully');
+                loadMyTeams();
+            } else {
+                showErrorMessage(data.error || 'Failed to follow team');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showErrorMessage('Failed to follow team');
+        }
+    }
+
+    async function unfollowTeam(teamId) {
+        if (!confirm('Are you sure you want to unfollow this team?')) return;
+        
+        try {
+            const response = await fetch('../actions/unfollow_team.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ team_id: teamId })
+            });
+            
+            const data = await response.json();
+            if (data.success) {
+                showSuccessMessage('Team unfollowed successfully');
+                loadMyTeams();
+            } else {
+                showErrorMessage(data.error || 'Failed to unfollow team');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showErrorMessage('Failed to unfollow team');
+        }
+    }
+
+    // Start real-time updates
+    function startRealTimeUpdates() {
+        // Clear any existing intervals
+        stopRealTimeUpdates();
+        
+        // Set up new intervals
+        refreshIntervals.matches = setInterval(() => loadMatches(), REFRESH_INTERVAL);
+        refreshIntervals.teams = setInterval(() => loadMyTeams(), REFRESH_INTERVAL);
+    }
+
+    // Stop real-time updates
+    function stopRealTimeUpdates() {
+        Object.values(refreshIntervals).forEach(interval => clearInterval(interval));
+        refreshIntervals = {};
+    }
+
+    // Utility functions
+    function formatDateTime(dateString) {
+        const options = { 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric', 
+            hour: '2-digit', 
+            minute: '2-digit' 
+        };
+        return new Date(dateString).toLocaleDateString('en-US', options);
+    }
+
+    function showSuccessMessage(message) {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'alert alert-success';
+        alertDiv.textContent = message;
+        document.querySelector('.content-container').prepend(alertDiv);
+        setTimeout(() => alertDiv.remove(), 3000);
+    }
+
+    function showErrorMessage(message) {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'alert alert-error';
+        alertDiv.textContent = message;
+        document.querySelector('.content-container').prepend(alertDiv);
+        setTimeout(() => alertDiv.remove(), 3000);
+    }
+
+    // Initialize when DOM is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initial load
+        loadMatches();
+        loadMyTeams();
+        
+        // Start real-time updates
+        startRealTimeUpdates();
+        
+        // Handle tab visibility changes
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                stopRealTimeUpdates();
+            } else {
+                startRealTimeUpdates();
+            }
+        });
     });
 });

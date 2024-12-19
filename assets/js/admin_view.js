@@ -241,43 +241,40 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    document.getElementById('add-announcement-btn').addEventListener('click', async () => {
-        const modal = document.getElementById('announcement-modal');
+    document.getElementById('add-system-announcement-btn').addEventListener('click', () => {
+        const modal = document.getElementById('system-announcement-modal');
         modal.style.display = 'block';
     });
 
-    document.getElementById('announcement-form').addEventListener('submit', async (e) => {
+    document.getElementById('system-announcement-form').addEventListener('submit', async (e) => {
         e.preventDefault();
         const formData = new FormData(e.target);
         
         try {
-            const form = e.target;
-            form.classList.add('loading');
-
             const response = await fetch('../actions/create_notification.php', {
                 method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
                 body: JSON.stringify({
                     title: formData.get('title'),
                     message: formData.get('message'),
-                    type: 'GENERAL'
-                }),
-                headers: {
-                    'Content-Type': 'application/json'
-                }
+                    notification_type: 'GENERAL'
+                })
             });
             
             const data = await response.json();
             if (data.success) {
-                showSuccessMessage('Announcement created successfully');
-                closeModal('announcement-modal');
+                showSuccessMessage('System announcement created successfully');
+                closeModal('system-announcement-modal');
+                loadAnnouncements();
                 loadRecentActivity();
             } else {
                 showErrorMessage(data.error || 'Failed to create announcement');
             }
         } catch (error) {
-            showErrorMessage('Error creating announcement: ' + error.message);
-        } finally {
-            e.target.classList.remove('loading');
+            console.error('Error:', error);
+            showErrorMessage('Failed to create announcement');
         }
     });
 
@@ -466,31 +463,40 @@ document.addEventListener('DOMContentLoaded', function() {
 
     async function loadAnnouncements() {
         try {
-            const response = await fetch('../actions/get_announcements.php');
+            const response = await fetch('../actions/get_announcements.php?type=general');
             const data = await response.json();
             
-            const announcementsContainer = document.getElementById('announcements-list');
             if (data.success) {
-                announcementsContainer.innerHTML = `
-                    <div class="announcements-grid">
-                        ${data.announcements.map(announcement => `
-                            <div class="announcement-card">
-                                <div class="announcement-header">
-                                    <h3>${announcement.title}</h3>
-                                    <span class="timestamp">${formatTime(announcement.created_at)}</span>
-                                </div>
-                                <p>${announcement.message}</p>
-                                <div class="announcement-footer">
-                                    <span>By: ${announcement.sender_name}</span>
-                                    <span>Recipients: ${announcement.recipient_count}</span>
-                                </div>
+                const announcementsList = document.getElementById('system-announcements-list');
+                if (!announcementsList) {
+                    console.error('Announcements container not found');
+                    return;
+                }
+
+                announcementsList.innerHTML = data.announcements.map(announcement => `
+                    <div class="announcement-card">
+                        <div class="announcement-header">
+                            <div>
+                                <span class="announcement-title">${announcement.title}</span>
+                                <span class="announcement-type type-general">General</span>
                             </div>
-                        `).join('')}
+                            <span class="announcement-meta">
+                                ${formatDateTime(announcement.created_at)}
+                            </span>
+                        </div>
+                        <div class="announcement-content">
+                            ${announcement.message}
+                        </div>
+                        <div class="announcement-footer">
+                            <span>By: ${announcement.sender_name}</span>
+                            <span>System-wide</span>
+                        </div>
                     </div>
-                `;
+                `).join('');
             }
         } catch (error) {
             console.error('Error loading announcements:', error);
+            showErrorMessage('Failed to load announcements');
         }
     }
 
@@ -530,5 +536,157 @@ document.addEventListener('DOMContentLoaded', function() {
             showErrorMessage('Error deleting team');
             console.error('Error:', error);
         }
+    }
+
+    // Filter buttons
+    const filterButtons = document.querySelectorAll('.announcements-filter .filter-btn');
+    filterButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            loadAnnouncements(button.dataset.filter);
+        });
+    });
+
+    // Announcement type selection
+    const announcementTypeSelect = document.querySelector('#announcement-form select[name="type"]');
+    const teamSelect = document.getElementById('announcement-team-select');
+    
+    announcementTypeSelect?.addEventListener('change', function() {
+        teamSelect.style.display = this.value === 'TEAM' ? 'block' : 'none';
+        if (this.value === 'TEAM') {
+            loadTeamsForAnnouncement();
+        }
+    });
+
+    // Create announcement form submission
+    document.getElementById('announcement-form')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        
+        try {
+            const response = await fetch('../actions/create_announcement.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    title: formData.get('title'),
+                    message: formData.get('message'),
+                    type: formData.get('type'),
+                    team_id: formData.get('team_id') || null
+                })
+            });
+            
+            const data = await response.json();
+            if (data.success) {
+                showSuccessMessage('Announcement created successfully');
+                closeModal('announcement-modal');
+                loadAnnouncements('all');
+                loadRecentActivity();
+            } else {
+                showErrorMessage(data.error || 'Failed to create announcement');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showErrorMessage('Failed to create announcement');
+        }
+    });
+
+    // Utility function for date formatting
+    function formatDateTime(dateString) {
+        const options = { 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric', 
+            hour: '2-digit', 
+            minute: '2-digit' 
+        };
+        return new Date(dateString).toLocaleDateString('en-US', options);
+    }
+
+    // Load teams for team-specific announcements
+    async function loadTeamsForAnnouncement() {
+        try {
+            const response = await fetch('../actions/get_teams.php');
+            const data = await response.json();
+            
+            if (data.success) {
+                const teamSelect = document.getElementById('announcement-team-select');
+                teamSelect.innerHTML = `
+                    <option value="">Select Team</option>
+                    ${data.teams.map(team => `
+                        <option value="${team.team_id}">${team.team_name}</option>
+                    `).join('')}
+                `;
+            }
+        } catch (error) {
+            console.error('Error loading teams:', error);
+        }
+    }
+
+    // Initial load of announcements
+    loadAnnouncements();
+
+    // Add announcement button click handler
+    const addAnnouncementBtn = document.getElementById('add-system-announcement-btn');
+    if (addAnnouncementBtn) {
+        addAnnouncementBtn.addEventListener('click', () => {
+            const modal = document.getElementById('system-announcement-modal');
+            if (modal) {
+                modal.style.display = 'block';
+            }
+        });
+    }
+
+    // Close modal handler
+    const closeBtn = document.querySelector('#system-announcement-modal .close');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+            const modal = document.getElementById('system-announcement-modal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        });
+    }
+
+    // Form submission handler
+    const announcementForm = document.getElementById('system-announcement-form');
+    if (announcementForm) {
+        announcementForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            
+            try {
+                const response = await fetch('../actions/create_notification.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        title: formData.get('title'),
+                        message: formData.get('message'),
+                        notification_type: 'GENERAL'
+                    })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    showSuccessMessage('System announcement created successfully');
+                    const modal = document.getElementById('system-announcement-modal');
+                    if (modal) {
+                        modal.style.display = 'none';
+                    }
+                    announcementForm.reset();
+                    loadAnnouncements(); // Reload announcements after successful creation
+                    loadRecentActivity();
+                } else {
+                    showErrorMessage(data.error || 'Failed to create announcement');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showErrorMessage('Failed to create announcement');
+            }
+        });
     }
 });
