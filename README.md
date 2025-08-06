@@ -1,5 +1,5 @@
 # 🏐 Ashesi Volleyball Management System
-A web-based platform designed to manage and streamline volleyball activities within Ashesi University. This system provides a centralized interface for players, coaches, organizers, administrators, and fans to interact with the sport in an organized, efficient, and real-time manner.
+A web-based platform designed to manage and streamline volleyball activities for a targeted university. This system provides a centralized interface for players, coaches, organizers, administrators, and fans to interact with the sport in an organized, efficient, and real-time manner.
 
 The platform aims to digitize the coordination of volleyball events, offering tools for team management, match scheduling, tournament organization, real-time engagement, and role-specific access control.
 
